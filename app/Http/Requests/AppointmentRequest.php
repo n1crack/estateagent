@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\DateValidation;
+use App\Rules\UKAddressValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AppointmentRequest extends FormRequest
@@ -29,8 +31,8 @@ class AppointmentRequest extends FormRequest
     {
 
         return [
-            'address' => ['required'],
-            'date' => ['required', 'date', 'date_format:Y-m-d H:i:s', 'after:now'],
+            'address' => ['required', new UKAddressValidation],
+            'date' => ['required', 'date', 'date_format:Y-m-d H:i:s', 'after:now', new DateValidation],
         ];
     }
 }
