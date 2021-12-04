@@ -19,7 +19,7 @@ class Address
     {
         $this->zip = str_replace(' ', '', $zip);
 
-        $response = Cache::remember('address:'.$this->zip, (int) env('API_QUERY_REMEMBER'), function () {
+        $response = Cache::remember('address:'.$this->zip, (int) env('API_CACHE_REMEMBER'), function () {
             $http = Http::get(env('API_POSTCODES_URL').$this->zip);
 
             return [

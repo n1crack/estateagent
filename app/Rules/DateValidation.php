@@ -2,6 +2,9 @@
 
 namespace App\Rules;
 
+use App\Utils\Address;
+use App\Utils\Distance;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Validation\Rule;
 
 class DateValidation implements Rule
@@ -11,9 +14,10 @@ class DateValidation implements Rule
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($zip)
     {
-        //
+        $this->address = new Address($zip);
+        $this->distance = new Distance($this->address);
     }
 
     /**
@@ -25,9 +29,20 @@ class DateValidation implements Rule
      */
     public function passes($attribute, $value)
     {
-        return !auth()->user()->appointments()
-            ->whereDate('when_to_leave', '<=', $value)
-            ->whereDate('next_available_date', '>=', $value)
+        $date = CarbonImmutable::make($value);
+        $min_date = $this->distance->minDate($date);
+        $max_date = $this->distance->maxDate($date);
+
+        return !auth()->user()
+            ->appointments()
+            ->where(function ($query) use ($min_date) {
+                $query->whereDate('when_to_leave', '<=', $min_date)
+                    ->whereDate('next_available_date', '>=', $min_date);
+            })
+            ->orWhere(function ($query) use ($max_date) {
+                $query->whereDate('when_to_leave', '<=', $max_date)
+                    ->whereDate('next_available_date', '>=', $max_date);
+            })
             ->count();
     }
 
