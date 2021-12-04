@@ -32,7 +32,13 @@ class AppointmentRequest extends FormRequest
 
         return [
             'address' => ['required', new UKAddressValidation],
-            'date' => ['required', 'date', 'date_format:Y-m-d H:i:s', 'after:now', new DateValidation($this->address)],
+            'date' => [
+                'required',
+                'date',
+                'date_format:Y-m-d H:i:s',
+                'after:now',
+                new DateValidation($this->address, $this->appointment),
+            ],
         ];
     }
 }

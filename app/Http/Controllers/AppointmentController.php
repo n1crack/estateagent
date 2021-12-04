@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AppointmentRequest;
 use App\Http\Requests\AppointmentUpdateRequest;
 use App\Http\Requests\ContactRequest;
+use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Repositories\AppointmentRepository;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class AppointmentController extends Controller
     {
         $appointments = AppointmentRepository::all($request);
 
-        return $appointments;
+        return AppointmentResource::collection($appointments);
     }
 
     /**
@@ -35,7 +36,7 @@ class AppointmentController extends Controller
         $appointmentValidated = $appointmentRequest->validated();
         $contactValidated = $contactRequest->validated();
 
-        return AppointmentRepository::save($contactValidated, $appointmentValidated);
+        return new AppointmentResource(AppointmentRepository::save($contactValidated, $appointmentValidated));
     }
 
     /**
@@ -46,7 +47,7 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment)
     {
-        return AppointmentRepository::get($appointment);
+        return new AppointmentResource(AppointmentRepository::get($appointment));
     }
 
     /**
@@ -60,7 +61,7 @@ class AppointmentController extends Controller
     {
         $appointmentValidated = $appointmentRequest->validated();
 
-        return AppointmentRepository::update($appointment, $appointmentValidated);
+        return new AppointmentResource(AppointmentRepository::update($appointment, $appointmentValidated));
     }
 
     /**

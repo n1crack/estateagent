@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Utils\Distance;
 use App\Utils\Address;
@@ -51,18 +52,15 @@ class AppointmentRepository
         $appoinmentData['contact_id'] = $contact->id;
         $appoinmentData = array_merge($appoinmentData, static::calcDistance($appoinmentData));
 
-        $appoinment = Appointment::create($appoinmentData);
-
-        return compact('contact', 'appoinment');
+        return Appointment::create($appoinmentData);
     }
 
     public static function update(Appointment $appointment, $appoinmentData)
     {
         $appoinmentData = array_merge($appoinmentData, static::calcDistance($appoinmentData));
+        $appointment->update($appoinmentData);
 
-        $appoinment = $appointment->update($appoinmentData);
-
-        return compact('appoinment');
+        return $appointment;
     }
 
     public static function delete(Appointment $appointment)
@@ -71,7 +69,9 @@ class AppointmentRepository
             return response()->json(['error' => 'You are not authorized.'], Response::HTTP_UNAUTHORIZED);
         }
 
-        return $appointment->delete();
+        $appointment->delete();
+
+        return response()->json(['success' => 'The appointment has deleted.'], Response::HTTP_OK);
     }
 
     public static function calcDistance($appoinmentData)

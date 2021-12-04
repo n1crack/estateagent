@@ -9,15 +9,18 @@ use Illuminate\Contracts\Validation\Rule;
 
 class DateValidation implements Rule
 {
+    private $appointment;
+
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct($zip)
+    public function __construct($zip, $appointment)
     {
         $this->address = new Address($zip);
         $this->distance = new Distance($this->address);
+        $this->appointment = $appointment;
     }
 
     /**
@@ -34,13 +37,19 @@ class DateValidation implements Rule
         $max_date = $this->distance->maxDate($date);
 
         return !auth()->user()->appointments()
-            ->where(function ($query) use ($min_date) {
-                $query->whereDate('when_to_leave', '<=', $min_date)
-                    ->whereDate('next_available_date', '>=', $min_date);
+            ->when(isset($this->appointment), function ($query) {
+                $query->where('id', '!=', $this->appointment->id);
             })
-            ->orWhere(function ($query) use ($max_date) {
-                $query->whereDate('when_to_leave', '<=', $max_date)
-                    ->whereDate('next_available_date', '>=', $max_date);
+            ->where(function ($query) use ($min_date, $max_date) {
+                $query
+                    ->where(function ($query) use ($min_date) {
+                        $query->whereDate('when_to_leave', '<=', $min_date)
+                            ->whereDate('next_available_date', '>=', $min_date);
+                    })
+                    ->orWhere(function ($query) use ($max_date) {
+                        $query->whereDate('when_to_leave', '<=', $max_date)
+                            ->whereDate('next_available_date', '>=', $max_date);
+                    });
             })
             ->count();
     }
