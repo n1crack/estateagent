@@ -59,14 +59,11 @@ class AppointmentRepository
 
         $date = CarbonImmutable::make($appoinmentData['date']);
 
-        $when_to_leave = $date->subMilliseconds($distance->time());
-        $next_available_date = $date->addSeconds((int) env('APPOINTMENT_TIME'))->addMilliseconds($distance->time());
-
         return [
             'distance' => $distance->length(),
             'time' => $distance->time(),
-            'when_to_leave' => $when_to_leave,
-            'next_available_date' => $next_available_date
+            'when_to_leave' => $distance->minDate($date),
+            'next_available_date' => $distance->maxDate($date),
         ];
     }
 
