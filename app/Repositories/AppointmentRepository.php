@@ -24,7 +24,6 @@ class AppointmentRepository
             $contactData
         );
 
-
         // create appointment
         $appoinmentData['user_id'] = auth()->user()->id;
         $appoinmentData['contact_id'] = $contact->id;
@@ -60,8 +59,8 @@ class AppointmentRepository
 
         $date = CarbonImmutable::make($appoinmentData['date']);
 
-        $when_to_leave = $date->addMilliseconds($distance->time());
-        $next_available_date = $when_to_leave->addSeconds((int) env('APPOINTMENT_TIME'))->addMilliseconds($distance->time());
+        $when_to_leave = $date->subMilliseconds($distance->time());
+        $next_available_date = $date->addSeconds((int) env('APPOINTMENT_TIME'))->addMilliseconds($distance->time());
 
         return [
             'distance' => $distance->length(),
