@@ -3,6 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\Appointment;
+use App\Utils\Distance;
+use App\Utils\Address;
+use Carbon\CarbonImmutable;
 use Symfony\Component\HttpFoundation\Response;
 
 class AppointmentRepository
@@ -21,11 +24,7 @@ class AppointmentRepository
         // create appointment
         $appoinmentData['user_id'] = auth()->user()->id;
         $appoinmentData['contact_id'] = $contact->id;
-
-        $appoinmentData['distance'] = 0;
-        $appoinmentData['time'] = 0;
-        $appoinmentData['when_to_leave'] = now();
-        $appoinmentData['next_available_date'] = now();
+        $appoinmentData = array_merge($appoinmentData, static::calcDistance($appoinmentData));
 
         $appoinment = Appointment::create($appoinmentData);
 
@@ -34,11 +33,7 @@ class AppointmentRepository
 
     public static function update(Appointment $appointment, $appoinmentData)
     {
-        // create appointment
-        $appoinmentData['distance'] = 0;
-        $appoinmentData['time'] = 0;
-        $appoinmentData['when_to_leave'] = now();
-        $appoinmentData['next_available_date'] = now();
+        $appoinmentData = array_merge($appoinmentData, static::calcDistance($appoinmentData));
 
         $appoinment = $appointment->update($appoinmentData);
 
@@ -51,9 +46,25 @@ class AppointmentRepository
             return response()->json(['error' => 'You are not authorized.'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $appointment->contact()->delete();
-
         return $appointment->delete();
+    }
+
+    public static function calcDistance($appoinmentData)
+    {
+        $address = new Address($appoinmentData['address']);
+        $distance = new Distance($address);
+
+        $date = CarbonImmutable::make($appoinmentData['date']);
+
+        $when_to_leave = $date->addMilliseconds($distance->time());
+        $next_available_date = $when_to_leave->addSeconds((int) env('APPOINTMENT_TIME'))->addMilliseconds($distance->time());
+
+        return [
+            'distance' => $distance->length(),
+            'time' => $distance->time(),
+            'when_to_leave' => $when_to_leave,
+            'next_available_date' => $next_available_date
+        ];
     }
 
 }
