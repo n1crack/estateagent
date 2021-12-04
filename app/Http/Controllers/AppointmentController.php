@@ -7,7 +7,6 @@ use App\Http\Requests\AppointmentUpdateRequest;
 use App\Http\Requests\ContactRequest;
 use App\Models\Appointment;
 use App\Repositories\AppointmentRepository;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
