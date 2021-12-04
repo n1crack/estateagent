@@ -2,23 +2,21 @@
 
 namespace App\Repositories;
 
-use App\Http\Requests\AppointmentRequest;
-use App\Http\Requests\ContactRequest;
 use App\Models\Appointment;
-use App\Models\Contact;
+use Symfony\Component\HttpFoundation\Response;
 
 class AppointmentRepository
 {
 
     public static function all()
     {
-        return Appointment::all();
+        return auth()->user()->appointments()->get();
     }
 
     public static function save($contactData, $appoinmentData)
     {
         // create customer
-        $contact = Contact::create($contactData);
+        $contact = auth()->user()->contacts()->create($contactData);
 
         // create appointment
         $appoinmentData['user_id'] = auth()->user()->id;
@@ -49,6 +47,10 @@ class AppointmentRepository
 
     public static function delete(Appointment $appointment)
     {
+        if ($appointment->user->id !== auth()->user()->id) {
+            return response()->json(['error' => 'You are not authorized.'], Response::HTTP_UNAUTHORIZED);
+        }
+
         $appointment->contact()->delete();
 
         return $appointment->delete();
