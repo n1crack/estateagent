@@ -19,7 +19,11 @@ class AppointmentRepository
     public static function save($contactData, $appoinmentData)
     {
         // create customer
-        $contact = auth()->user()->contacts()->create($contactData);
+        $contact = auth()->user()->contacts()->firstOrCreate(
+            ['email' => $contactData['email'],],
+            $contactData
+        );
+
 
         // create appointment
         $appoinmentData['user_id'] = auth()->user()->id;
