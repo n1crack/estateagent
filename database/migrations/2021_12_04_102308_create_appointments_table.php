@@ -19,6 +19,8 @@ class CreateAppointmentsTable extends Migration
             $table->unsignedInteger('contact_id');
             $table->string('address');
             $table->timestamp('date');
+            $table->double('distance');
+            $table->double('time');
             $table->timestamp('when_to_leave')->description('When to leave the real estate office?');
             $table->timestamp('next_available_date')->description('When is it possible to return to the real estate office after the appointment?');
             $table->timestamps();
