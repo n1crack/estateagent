@@ -33,8 +33,7 @@ class DateValidation implements Rule
         $min_date = $this->distance->minDate($date);
         $max_date = $this->distance->maxDate($date);
 
-        return !auth()->user()
-            ->appointments()
+        return !auth()->user()->appointments()
             ->where(function ($query) use ($min_date) {
                 $query->whereDate('when_to_leave', '<=', $min_date)
                     ->whereDate('next_available_date', '>=', $min_date);

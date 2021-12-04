@@ -45,7 +45,7 @@ class AppointmentController extends Controller
      */
     public function show(Appointment $appointment)
     {
-        return $appointment;
+        return AppointmentRepository::get($appointment);
     }
 
     /**

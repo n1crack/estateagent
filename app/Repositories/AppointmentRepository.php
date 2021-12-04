@@ -16,6 +16,16 @@ class AppointmentRepository
         return auth()->user()->appointments()->get();
     }
 
+    public static function get(Appointment $appointment)
+    {
+        if ($appointment->user->id !== auth()->user()->id) {
+            return response()->json(['error' => 'You are not authorized.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $appointment;
+    }
+
+
     public static function save($contactData, $appoinmentData)
     {
         // create customer
