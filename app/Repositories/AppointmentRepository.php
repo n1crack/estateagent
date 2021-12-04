@@ -5,15 +5,27 @@ namespace App\Repositories;
 use App\Models\Appointment;
 use App\Utils\Distance;
 use App\Utils\Address;
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class AppointmentRepository
 {
 
-    public static function all()
+    public static function all(Request $request)
     {
-        return auth()->user()->appointments()->get();
+        $from = $request->get('from') ?? false;
+        $to = $request->get('to') ?? false;
+
+        return auth()->user()->appointments()
+            ->when($from, function ($query) use ($from) {
+                $query->where('date', '>=', Carbon::make($from)->startOfDay());
+            })
+            ->when($to, function ($query) use ($to) {
+                $query->where('date', '<=', Carbon::make($to)->endOfDay());
+            })
+            ->get();
     }
 
     public static function get(Appointment $appointment)

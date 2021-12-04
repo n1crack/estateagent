@@ -7,6 +7,8 @@ use App\Http\Requests\AppointmentUpdateRequest;
 use App\Http\Requests\ContactRequest;
 use App\Models\Appointment;
 use App\Repositories\AppointmentRepository;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
@@ -15,9 +17,9 @@ class AppointmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $appointments = AppointmentRepository::all();
+        $appointments = AppointmentRepository::all($request);
 
         return $appointments;
     }
