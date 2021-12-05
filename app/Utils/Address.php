@@ -22,7 +22,7 @@ class Address
         $cache_remember = (int) config('estateagent.cache_remember');
 
         $response = Cache::remember('address:'.$this->zip,  $cache_remember, function () {
-            $http = Http::get(config('estateagent.api.postcodes').$this->zip);
+            $http = Http::get(config('estateagent.zip_api.url').$this->zip);
 
             return [
                 'status' => $http->status(),

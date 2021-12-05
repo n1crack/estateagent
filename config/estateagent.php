@@ -2,14 +2,16 @@
 
 
 return [
-
     'cache_remember' => env('API_CACHE_REMEMBER'),
 
-    'api' => [
-        'distance' => env('API_DISTANCE_URL'),
-        'postcodes' => env('API_POSTCODES_URL'),
+    'zip_api' => [
+        'url' => env('API_POSTCODES_URL'),
     ],
 
+    'distance_api' => [
+        'url' => env('API_GRAPHHOPPER_URL'),
+        'key' => env('API_GRAPHHOPPER_KEY'),
+    ],
 
     'zip' => env('REAL_ESTATE_ZIP_CODE'),
     'lat' => env('REAL_ESTATE_LAT'),

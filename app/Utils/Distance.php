@@ -23,16 +23,26 @@ class Distance
     public function __construct(Address $address)
     {
         $this->address = $address;
-
         $cache_remember = (int) config('estateagent.cache_remember');
 
         $response = Cache::remember('distance:'.$address->zip(), $cache_remember, function () {
-            $http = Http::get(config('estateagent.api.distance'), [
-                'lat1' => config('estateagent.lat'),
-                'lng1' => config('estateagent.lng'),
-                'lat2' => $this->address->getLatitude(),
-                'lng2' => $this->address->getLongitude(),
-                'token' => now()->format('d'),
+            $distance_api_url = config('estateagent.distance_api.url').'?key='.config('estateagent.distance_api.key');
+
+            $http = Http::post($distance_api_url, [
+                'points' => [
+                    // estate agent lng and lat
+                    [
+                        config('estateagent.lng'),
+                        config('estateagent.lat'),
+                    ],
+                    // appointment lng and lat
+                    [
+                        $this->address->getLongitude(),
+                        $this->address->getLatitude(),
+                    ],
+                ],
+                'calc_points' => false,
+                'instructions' => false,
             ]);
 
             return [
