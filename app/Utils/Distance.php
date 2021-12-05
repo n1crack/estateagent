@@ -24,10 +24,12 @@ class Distance
     {
         $this->address = $address;
 
-        $response = Cache::remember('distance:'.$address->zip(), (int) env('API_CACHE_REMEMBER'), function () {
-            $http = Http::get(env('API_DISTANCE_URL'), [
-                'lat1' => env('REAL_ESTATE_LAT'),
-                'lng1' => env('REAL_ESTATE_LNG'),
+        $cache_remember = (int) config('estateagent.cache_remember');
+
+        $response = Cache::remember('distance:'.$address->zip(), $cache_remember, function () {
+            $http = Http::get(config('estateagent.api.distance'), [
+                'lat1' => config('estateagent.lat'),
+                'lng1' => config('estateagent.lng'),
                 'lat2' => $this->address->getLatitude(),
                 'lng2' => $this->address->getLongitude(),
                 'token' => '04',
@@ -68,7 +70,9 @@ class Distance
 
     public function maxDate(CarbonImmutable $date)
     {
-        return $date->addSeconds((int) env('APPOINTMENT_TIME'))->addMilliseconds($this->time());
+        $appointment_time = (int) config('estateagent.appointment_time');
+
+        return $date->addSeconds($appointment_time)->addMilliseconds($this->time());
     }
 
 }

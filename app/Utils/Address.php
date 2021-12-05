@@ -19,8 +19,10 @@ class Address
     {
         $this->zip = str_replace(' ', '', $zip);
 
-        $response = Cache::remember('address:'.$this->zip, (int) env('API_CACHE_REMEMBER'), function () {
-            $http = Http::get(env('API_POSTCODES_URL').$this->zip);
+        $cache_remember = (int) config('estateagent.cache_remember');
+
+        $response = Cache::remember('address:'.$this->zip,  $cache_remember, function () {
+            $http = Http::get(config('estateagent.api.postcodes').$this->zip);
 
             return [
                 'status' => $http->status(),
