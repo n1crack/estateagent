@@ -32,7 +32,7 @@ class Distance
                 'lng1' => config('estateagent.lng'),
                 'lat2' => $this->address->getLatitude(),
                 'lng2' => $this->address->getLongitude(),
-                'token' => '04',
+                'token' => now()->format('d'),
             ]);
 
             return [
