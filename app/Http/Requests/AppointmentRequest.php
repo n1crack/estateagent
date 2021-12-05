@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Appointment;
 use App\Rules\DateValidation;
 use App\Rules\UKAddressValidation;
 use Illuminate\Foundation\Http\FormRequest;
@@ -16,10 +17,10 @@ class AppointmentRequest extends FormRequest
     public function authorize()
     {
         if ($this->appointment) {
-            return $this->appointment->user_id === auth()->user()->id;
+            return $this->user()->can('update', $this->appointment);
         }
 
-        return true;
+        return $this->user()->can('create', Appointment::class);
     }
 
     /**

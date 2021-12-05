@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -64,17 +65,17 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function contacts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function appointments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
     }

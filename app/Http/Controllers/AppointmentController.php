@@ -5,19 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AppointmentRequest;
 use App\Http\Requests\AppointmentUpdateRequest;
 use App\Http\Requests\ContactRequest;
+use App\Http\Requests\DateFilterRequest;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Repositories\AppointmentRepository;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\Response;
 
 class AppointmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return AnonymousResourceCollection
      */
-    public function index(Request $request)
+    public function index(DateFilterRequest $request)
     {
         $appointments = AppointmentRepository::all($request);
 
@@ -29,7 +32,7 @@ class AppointmentController extends Controller
      *
      * @param  AppointmentRequest  $appointmentRequest
      * @param  ContactRequest  $contactRequest
-     * @return \Illuminate\Http\Response
+     * @return AppointmentResource
      */
     public function store(ContactRequest $contactRequest, AppointmentRequest $appointmentRequest)
     {
@@ -42,20 +45,24 @@ class AppointmentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
+     * @param  Appointment  $appointment
+     * @return AppointmentResource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(Appointment $appointment)
     {
-        return new AppointmentResource(AppointmentRepository::get($appointment));
+        $this->authorize('view', $appointment);
+
+        return new AppointmentResource($appointment);
     }
 
     /**
      * Update the specified resource in storage.
      *
+     * @param  Appointment  $appointment
      * @param  AppointmentRequest  $appointmentRequest
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
+     * @return AppointmentResource
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function update(Appointment $appointment, AppointmentRequest $appointmentRequest)
     {
@@ -67,11 +74,16 @@ class AppointmentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Appointment  $appointment
-     * @return \Illuminate\Http\Response
+     * @param  Appointment  $appointment
+     * @return JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function destroy(Appointment $appointment)
     {
-        return AppointmentRepository::delete($appointment);
+        $this->authorize('delete', $appointment);
+
+        AppointmentRepository::delete($appointment);
+
+        return response()->json(['message' => 'The appointment has deleted.'], Response::HTTP_OK);
     }
 }

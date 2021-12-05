@@ -12,7 +12,11 @@ class Appointment extends Model
     protected $guarded = [];
 
     protected $with = ['contact'];
-    protected $casts = ['user_id' => 'integer'];
+    protected $casts = [
+        'user_id' => 'integer',
+        'when_to_leave' => 'datetime',
+        'next_available_date' => 'datetime',
+    ];
 
     public function contact()
     {
@@ -22,5 +26,11 @@ class Appointment extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+
+    public function scopeFilterDate($query, $operator, $date)
+    {
+        return $query->where('date', $operator, $date);
     }
 }
