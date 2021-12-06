@@ -52,5 +52,8 @@ API_GRAPHHOPPER_KEY=
 | /api/appointment/{id} | DELETE | delete appointment | -                                                                                                                                                                     |
 
 
+### Postman Collection
+
+https://go.postman.co/workspace/yozdemir~f8132c03-b13d-4131-871d-a1186db19594/collection/18643288-751b014e-e24f-4915-9bf2-0fd62874965c
 
 
