@@ -49,6 +49,9 @@ class DateValidation implements Rule
                     ->orWhere(function ($query) use ($max_date) {
                         $query->whereDate('when_to_leave', '<=', $max_date)
                             ->whereDate('next_available_date', '>=', $max_date);
+                    })
+                    ->orWhere(function ($query) use ($min_date, $max_date) {
+                        $query->whereBetween('date', [$min_date, $max_date]);
                     });
             })
             ->count();
