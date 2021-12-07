@@ -41,15 +41,8 @@ class DateValidation implements Rule
                 $query->where('id', '!=', $this->appointment->id);
             })
             ->where(function ($query) use ($min_date, $max_date) {
-                $query
-                    ->where(function ($query) use ($min_date) {
-                        $query->whereDate('when_to_leave', '<=', $min_date)
-                            ->whereDate('next_available_date', '>=', $min_date);
-                    })
-                    ->orWhere(function ($query) use ($max_date) {
-                        $query->whereDate('when_to_leave', '<=', $max_date)
-                            ->whereDate('next_available_date', '>=', $max_date);
-                    })
+                $query->whereBetween('when_to_leave', [$min_date, $max_date])
+                    ->orWhereBetween('next_available_date', [$min_date, $max_date])
                     ->orWhere(function ($query) use ($min_date, $max_date) {
                         $query->whereDate('when_to_leave', '<=', $min_date)
                             ->whereDate('next_available_date', '>=', $max_date);
