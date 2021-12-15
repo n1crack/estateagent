@@ -5,6 +5,7 @@ namespace App\Rules;
 use App\Utils\Address;
 use App\Utils\Distance;
 use Carbon\CarbonImmutable;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Contracts\Validation\Rule;
 
 class DateValidation implements Rule
@@ -32,7 +33,12 @@ class DateValidation implements Rule
      */
     public function passes($attribute, $value)
     {
-        $date = CarbonImmutable::make($value);
+        try {
+            $date = CarbonImmutable::make($value);
+        } catch (InvalidFormatException $e) {
+            return false;
+        }
+
         $min_date = $this->distance->minDate($date);
         $max_date = $this->distance->maxDate($date);
 
