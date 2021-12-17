@@ -41,7 +41,7 @@ class Distance
                         $this->address->getLatitude(),
                     ],
                 ],
-                'calc_points' => false,
+//                'calc_points' => false,
                 'instructions' => false,
             ]);
 
@@ -53,6 +53,11 @@ class Distance
 
         $this->valid = $response['status'] === 200;
         $this->detail = collect($response['data']);
+    }
+
+    public static function detail(Address $address)
+    {
+        return (new static($address))->detail;
     }
 
     /**

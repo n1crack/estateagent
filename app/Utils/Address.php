@@ -8,30 +8,32 @@ use Illuminate\Support\Facades\Http;
 
 class Address
 {
-    private $valid;
-    private $detail;
-    private $zip;
+    public $valid;
+    public $detail;
+    public $zip;
 
     /**
      * @param $zip
      */
-    public function __construct($zip)
+    public function __construct($zip = null)
     {
-        $this->zip = str_replace(' ', '', $zip);
+        if ($zip) {
+            $this->zip = str_replace(' ', '', $zip);
 
-        $cache_remember = (int) config('estateagent.cache_remember');
+            $cache_remember = (int) config('estateagent.cache_remember');
 
-        $response = Cache::remember('address:'.$this->zip,  $cache_remember, function () {
-            $http = Http::get(config('estateagent.zip_api.url').$this->zip);
+            $response = Cache::remember('address:'.$this->zip, $cache_remember, function () {
+                $http = Http::get(config('estateagent.zip_api.url').$this->zip);
 
-            return [
-                'status' => $http->status(),
-                'data' => $http->collect()->get('result'),
-            ];
-        });
+                return [
+                    'status' => $http->status(),
+                    'data' => $http->collect()->get('result'),
+                ];
+            });
 
-        $this->valid = $response['status'] === 200;
-        $this->detail = collect($response['data']);
+            $this->valid = $response['status'] === 200;
+            $this->detail = collect($response['data']);
+        }
     }
 
     /**

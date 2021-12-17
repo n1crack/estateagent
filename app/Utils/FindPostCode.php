@@ -25,16 +25,28 @@ class FindPostCode
 
             return [
                 'status' => $http->status(),
-                'data' => $http->collect()->get('result'),
+                'data' => collect($http->collect()->get('result')),
             ];
         });
 
         $this->valid = $response['status'] === 200;
-        $this->detail = collect($response['data']);
+        $this->detail = collect($response['data'][0]);
+
+
+
+        $address = new Address;
+        $address->valid =  true;
+        $address->zip = $this->detail->get('postcode');
+        $address->detail = collect([
+            'latitude' => $this->detail->get('latitude'),
+            'longitude' => $this->detail->get('longitude'),
+        ]);
+
+        $this->detail['appointment'] = Distance::detail($address);
     }
 
     public function nearest()
     {
-        return collect($this->detail->first());
+        return $this->detail;
     }
 }
